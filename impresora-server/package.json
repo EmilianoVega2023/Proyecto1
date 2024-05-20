@@ -1,19 +1,24 @@
 {
   "name": "impresora-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Servidor para gestionar órdenes de restaurantes y enviar notificaciones a dispositivos móviles",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
+  
+  "script": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Tu Nombre",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "node-thermal-printer": "^4.4.2"
+    "axios": "^0.21.1",
+    "express": "^4.17.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^2.0.15"
   }
 }

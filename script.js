@@ -4,7 +4,7 @@ document.getElementById('addOrder').addEventListener('click', function() {
     
     if (tableNumber && orderItems) {
         addOrder(tableNumber, orderItems);
-        sendToPrinter(tableNumber, orderItems); 
+        sendToMobile(tableNumber, orderItems); // Nueva función para enviar al móvil
     } else {
         alert('Por favor, ingrese tanto el número de mesa como los elementos del pedido.');
     }
@@ -26,14 +26,14 @@ function addOrder(tableNumber, orderItems) {
     document.getElementById('orderItems').value = '';
 }
 
-function sendToPrinter(tableNumber, orderItems) {
-    let printerIp = '192.168.1.100'; // Reemplaza con la IP de tu impresora
+function sendToMobile(tableNumber, orderItems) {
+    let mobileIp = '192.168.1.101'; // Reemplaza con la IP del dispositivo móvil
     let orderData = {
         tableNumber: tableNumber,
         orderItems: orderItems
     };
 
-    fetch(`http://${printerIp}:3000/print`, {
+    fetch(`http://${mobileIp}:3000/sendNotification`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -42,9 +42,9 @@ function sendToPrinter(tableNumber, orderItems) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Pedido enviado a la impresora:', data);
+        console.log('Pedido enviado al dispositivo móvil:', data);
     })
     .catch(error => {
-        console.error('Error al enviar a la impresora:', error);
+        console.error('Error al enviar al dispositivo móvil:', error);
     });
 }
