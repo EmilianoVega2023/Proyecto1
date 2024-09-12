@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandas - Visualización de Órdenes</title>
+    <link rel="stylesheet" href="stylees.css">
+
+</head>
+<body>
+    <h1>Órdenes Actuales</h1>
+    <div id="ordersList"></div>
+
+    <script>
+        function startTimer(orderItem, startTime) {
+            function updateTimer() {
+                let now = new Date();
+                let elapsedTime = Math.floor((now - startTime) / 1000); // tiempo en segundos
+
+                let minutes = Math.floor(elapsedTime / 60);
+                let seconds = elapsedTime % 60;
+
+                // Mostrar en formato mm:ss
+                orderItem.querySelector('.order-timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            updateTimer();
+            return setInterval(updateTimer, 1000); // Actualizar cada segundo
+        }
+
+        function displayOrders() {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            let ordersList = document.getElementById('ordersList');
+            
+            ordersList.innerHTML = '';
+            
+            orders.forEach(order => {
+                let orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <strong>Mesa ${order.tableNumber}</strong>
+                    <p>${order.orderItems}</p>
+                    <div class="order-timer">00:00</div>
+                    <button class="close-btn">&times;</button>
+                `;
+                ordersList.appendChild(orderItem);
+
+                // Iniciar el cronómetro
+                let startTime = new Date();
+                let timerInterval = startTimer(orderItem, startTime);
+
+                // Manejar el cierre de la orden
+                orderItem.querySelector('.close-btn').addEventListener('click', function() {
+                    clearInterval(timerInterval); // Detener el cronómetro
+                    orderItem.remove(); // Eliminar la orden de la vista
+                });
+            });
+        }
+
+        // Llama a esta función al cargar la página para mostrar las órdenes actuales
+        displayOrders();
+
+        // Opcionalmente, podrías actualizar las órdenes automáticamente cada cierto tiempo
+        setInterval(displayOrders, 5000); // Actualiza cada 5 segundos
+    </script>
+</body>
+</html>

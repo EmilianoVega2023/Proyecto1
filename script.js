@@ -4,47 +4,51 @@ document.getElementById('addOrder').addEventListener('click', function() {
     
     if (tableNumber && orderItems) {
         addOrder(tableNumber, orderItems);
-        sendToMobile(tableNumber, orderItems); // Nueva función para enviar al móvil
     } else {
         alert('Por favor, ingrese tanto el número de mesa como los elementos del pedido.');
     }
 });
 
 function addOrder(tableNumber, orderItems) {
-    let ordersList = document.getElementById('ordersList');
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
     
-    let orderItem = document.createElement('div');
-    orderItem.className = 'order-item';
-    orderItem.innerHTML = `
-        <strong>Mesa ${tableNumber}</strong>
-        <p>${orderItems}</p>
-    `;
-    
-    ordersList.appendChild(orderItem);
-    
-    document.getElementById('tableNumber').value = '';
-    document.getElementById('orderItems').value = '';
-}
-
-function sendToMobile(tableNumber, orderItems) {
-    let mobileIp = '192.168.1.101'; // Reemplaza con la IP del dispositivo móvil
-    let orderData = {
+    orders.push({
         tableNumber: tableNumber,
         orderItems: orderItems
-    };
+    });
+    
+    localStorage.setItem('orders', JSON.stringify(orders));
 
-    fetch(`http://${mobileIp}:3000/sendNotification`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Pedido enviado al dispositivo móvil:', data);
-    })
-    .catch(error => {
-        console.error('Error al enviar al dispositivo móvil:', error);
+    document.getElementById('tableNumber').value = '';
+    document.getElementById('orderItems').value = '';
+    
+    displayOrders();
+}
+
+function displayOrders() {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    let ordersList = document.getElementById('ordersList');
+    
+    ordersList.innerHTML = '';
+    
+    orders.forEach((order, index) => {
+        let orderItem = document.createElement('div');
+        orderItem.className = 'order-item';
+        orderItem.innerHTML = `
+            <strong>Mesa ${order.tableNumber}</strong>
+            <p>${order.orderItems}</p>
+            <button class="delete-order" onclick="deleteOrder(${index})">&times;</button>
+        `;
+        ordersList.appendChild(orderItem);
     });
 }
+
+function deleteOrder(index) {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    orders.splice(index, 1);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    displayOrders();
+}
+
+// Llama a esta función al cargar la página para mostrar las órdenes actuales
+displayOrders();
